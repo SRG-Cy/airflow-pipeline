@@ -1,0 +1,52 @@
+name: Airflow DAG CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-dags:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        pip install apache-airflow==2.8.1 pytest
+
+    - name: Validate DAG syntax
+      run: |
+        python -c "
+        import ast, os, sys
+        dag_dir = 'dags'
+        errors = []
+        for f in os.listdir(dag_dir):
+            if f.endswith('.py'):
+                try:
+                    with open(os.path.join(dag_dir, f)) as fh:
+                        ast.parse(fh.read())
+                    print(f'✅ {f} — syntax OK')
+                except SyntaxError as e:
+                    errors.append(f'❌ {f} — {e}')
+        if errors:
+            print('\n'.join(errors))
+            sys.exit(1)
+        "
+
+    - name: Test DAG loads correctly
+      env:
+        AIRFLOW__CORE__DAGS_FOLDER: ./dags
+        AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: sqlite:////tmp/airflow.db
+        AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      run: |
+        airflow db init
+        airflow dags list
