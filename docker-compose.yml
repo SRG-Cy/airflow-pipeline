@@ -1,0 +1,50 @@
+version: '3.8'
+
+x-airflow-common: &airflow-common
+  image: apache/airflow:2.8.1
+  environment:
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://ppr_user:ppr_password@postgres:5432/airflow_db
+    AIRFLOW__CORE__FERNET_KEY: ''
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+  volumes:
+    - ./dags:/opt/airflow/dags
+    - ./logs:/opt/airflow/logs
+    - ./plugins:/opt/airflow/plugins
+  depends_on:
+    postgres:
+      condition: service_healthy
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ppr_user
+      POSTGRES_PASSWORD: ppr_password
+      POSTGRES_DB: airflow_db
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "ppr_user"]
+      interval: 5s
+      retries: 5
+    ports:
+      - "5433:5432"
+
+  airflow-init:
+    <<: *airflow-common
+    command: >
+      bash -c "airflow db migrate &&
+               airflow users create --username admin --firstname Sree --lastname Rag --role Admin --email admin@example.com --password admin123"
+    restart: on-failure
+
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    ports:
+      - "8080:8080"
+    restart: always
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+    restart: always
