@@ -6,4 +6,5 @@ logs/
 *.egg-info/
 .airflowignore
 airflow.db
-airflow-webserver.pid
+airflow-webserver.pidairflow.cfg 
+webserver_config.py 
