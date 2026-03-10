@@ -1,4 +1,4 @@
-# 🇮🇪 Automated Irish Census Pipeline — Airflow + GitHub Actions
+# Automated Irish Census Pipeline - Airflow + GitHub Actions
 
 An automated data pipeline that fetches live population data from Ireland's CSO API, validates data quality, and runs on a weekly schedule. Orchestrated with Apache Airflow, containerised with Docker, and tested on every push via GitHub Actions CI/CD.
 
@@ -38,7 +38,7 @@ If any step fails, the push is flagged immediately — catching errors before th
 
 ---
 
-## 📋 DAG — `cso_population_pipeline`
+## 📋 DAG - `cso_population_pipeline`
 
 | Property | Value |
 |----------|-------|
@@ -50,9 +50,9 @@ If any step fails, the push is flagged immediately — catching errors before th
 
 ### Tasks
 
-**`fetch_cso_data`** — calls the CSO PxStat API, retrieves population data for all 26 Irish counties across 26 census years (1841–2022), and pushes the record count to Airflow XCom for downstream validation.
+**`fetch_cso_data`** - calls the CSO PxStat API, retrieves population data for all 26 Irish counties across 26 census years (1841-2022), and pushes the record count to Airflow XCom for downstream validation.
 
-**`validate_data`** — pulls the record count from XCom and validates it exceeds the minimum threshold (100 records). Fails loudly if the API returns unexpected data, preventing bad data from propagating downstream.
+**`validate_data`** - pulls the record count from XCom and validates it exceeds the minimum threshold (100 records). Fails loudly if the API returns unexpected data, preventing bad data from propagating downstream.
 
 ### Task Dependencies
 
@@ -68,7 +68,7 @@ fetch_cso_data >> validate_data
 |------|---------|
 | Apache Airflow 2.8.1 | Pipeline orchestration and scheduling |
 | Docker Compose | Containerised local deployment |
-| GitHub Actions | CI/CD — automated DAG validation on every push |
+| GitHub Actions | CI/CD - automated DAG validation on every push |
 | Python 3.11 | DAG logic and API calls |
 | PostgreSQL 15 | Airflow metadata database |
 
@@ -111,10 +111,10 @@ docker compose up -d
 ```
 
 This starts:
-- PostgreSQL (port 5433) — Airflow metadata database
-- Airflow Init — creates database tables and admin user
+- PostgreSQL (port 5433) - Airflow metadata database
+- Airflow Init - creates database tables and admin user
 - Airflow Webserver (port 8080) — UI
-- Airflow Scheduler — DAG runner
+- Airflow Scheduler - DAG runner
 
 **3. Wait 2 minutes then open Airflow UI**
 
@@ -161,13 +161,6 @@ pytest tests/
 - [cso-census-warehouse](https://github.com/SRG-Cy/cso-census-warehouse) — Star schema data warehouse on CSO Census data (dbt, PostgreSQL, Star Schema)
 
 ---
-
-## 👤 Author
-
-Built as part of an Irish Data Engineering portfolio targeting €45k–€60k roles in Ireland.
-
-- MSc Business Analytics — University of Galway
-- Skills: Python · Apache Airflow · Docker · GitHub Actions · CI/CD · PostgreSQL
 
 ---
 
