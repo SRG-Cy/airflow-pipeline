@@ -8,3 +8,5 @@ logs/
 airflow.db
 airflow-webserver.pidairflow.cfg 
 webserver_config.py 
+airflow.cfg 
+webserver_config.py 
